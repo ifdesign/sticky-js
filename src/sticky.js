@@ -30,6 +30,8 @@ class Sticky {
       wrap: options.wrap || false,
       marginTop: options.marginTop || 0,
       stickyFor: options.stickyFor || 0,
+      disabled: options.disabled || false,
+      zIndex: options.zIndex || 1,
       stickyClass: options.stickyClass || null,
       stickyContainer: options.stickyContainer || 'body',
     };
@@ -73,8 +75,10 @@ class Sticky {
     // set default variables
     element.sticky.active = false;
 
-    element.sticky.marginTop = parseInt(element.getAttribute('data-margin-top')) || this.options.marginTop;
+    element.sticky.marginTop = parseInt(element.getAttribute('data-sticky-margin-top')) || this.options.marginTop;
     element.sticky.stickyFor = parseInt(element.getAttribute('data-sticky-for')) || this.options.stickyFor;
+    element.sticky.disabled = parseInt(element.getAttribute('data-sticky-disabled')) || this.options.disabled;
+    element.sticky.zIndex = parseInt(element.getAttribute('data-sticky-z-index')) || this.options.zIndex;
     element.sticky.stickyClass = element.getAttribute('data-sticky-class') || this.options.stickyClass;
     element.sticky.wrap = element.hasAttribute('data-sticky-wrap') ? true : this.options.wrap;
     // @todo attribute for stickyContainer
@@ -234,7 +238,7 @@ class Sticky {
    setPosition(element) {
     this.css(element, { position: '', width: '', top: '', left: '' });
 
-    if ((this.vp.height < element.sticky.rect.height) || !element.sticky.active) {
+    if ((this.vp.height < element.sticky.rect.height) || !element.sticky.active || element.sticky.disabled) {
       return;
     }
 
@@ -259,12 +263,14 @@ class Sticky {
         top: element.sticky.rect.top + 'px',
         left: element.sticky.rect.left + 'px',
         width: element.sticky.rect.width + 'px',
+        zIndex: element.sticky.zIndex
       });
     } else if (this.scrollTop > (element.sticky.rect.top - element.sticky.marginTop)) {
       this.css(element, {
         position: 'fixed',
         width: element.sticky.rect.width + 'px',
         left: element.sticky.rect.left + 'px',
+        zIndex: element.sticky.zIndex
       });
 
       if (
